@@ -13,37 +13,17 @@ const configStorage = require('./config/storage')
 const configSentry = require('./config/sentry')
 const configMysql = require('./config/mysql')
 
-Sentry.init(configSentry)
+Sentry.init(configSentry);
 
-async function read(path, file) {
-  return new Promise(resolve => {
-    const stream = fs.createReadStream(path, { encoding: 'utf8' })
-
-    stream.on('data', async stream => {
-      try {
-        await file(stream)
-      } catch (err) {
-        Sentry.captureException(err)
-      }
-    })
-
-    stream.on('close', () => {
-      resolve()
-    })
-  })
-}
-
-(async function () {
+function main() {
   try {
     const storage = new StorageManager(configStorage)
-    const filename = await generateMysql(configMysql)
-    await read(filename, async (stream) => {
+    const filename = await generateMysql(configMysql, async (stream) => {
       await storage.put(filename, stream)
     })
-
   } catch (err) {
     Sentry.captureException(err)
   }
+}
 
-  fs.unlinkSync(`${now}.sql`)
-})()
+main()
