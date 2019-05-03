@@ -2,8 +2,6 @@ const execa = require('execa')
 const crypto = require('crypto')
 const moment = require('moment')
 
-const now = require('./now')
-
 module.exports = async (config, file) => new Promise(async (resolve, reject) => {
   try {
 
