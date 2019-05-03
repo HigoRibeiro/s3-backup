@@ -15,10 +15,10 @@ const configMysql = require('./config/mysql')
 
 Sentry.init(configSentry);
 
-function main() {
+async function main() {
   try {
     const storage = new StorageManager(configStorage)
-    const filename = await generateMysql(configMysql, async (stream) => {
+    await generateMysql(configMysql, async (filename, stream) => {
       await storage.put(filename, stream)
     })
   } catch (err) {
