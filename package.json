@@ -13,6 +13,7 @@
     "@sentry/node": "^5.1.0",
     "@slynova/flydrive": "^0.3.1",
     "aws-sdk": "^2.448.0",
+    "cron": "^1.7.1",
     "crypto": "^1.0.1",
     "dotenv": "^8.0.0",
     "execa": "^1.0.0",
