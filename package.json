@@ -1,0 +1,20 @@
+{
+  "name": "s3-backup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sentry/node": "^5.1.0",
+    "@slynova/flydrive": "^0.3.1",
+    "aws-sdk": "^2.448.0",
+    "dotenv": "^8.0.0",
+    "execa": "^1.0.0",
+    "moment": "^2.24.0"
+  }
+}
