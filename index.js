@@ -4,7 +4,7 @@ const fs = require('fs')
 const StorageManager = require('@slynova/flydrive')
 const Sentry = require('@sentry/node')
 
-const generateMysql = require('./generate-mysql')
+const getMySQLData = require('./get-mysql-data')
 const now = require('./now')
 
 dotenv.config()
@@ -18,7 +18,7 @@ Sentry.init(configSentry);
 async function main() {
   try {
     const storage = new StorageManager(configStorage)
-    await generateMysql(configMysql, async (filename, stream) => {
+    await getMySQLData(configMysql, async (filename, stream) => {
       await storage.put(filename, stream)
     })
   } catch (err) {
