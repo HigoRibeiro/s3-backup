@@ -3,8 +3,6 @@ const StorageManager = require('@slynova/flydrive')
 const Sentry = require('@sentry/node')
 
 const getMySQLData = require('./get-mysql-data')
-const now = require('./now')
-
 
 const configStorage = require('./config/storage')
 const configSentry = require('./config/sentry')
