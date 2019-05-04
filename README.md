@@ -26,6 +26,15 @@ cp .env.example .env
 
 Altere as variáveis conforme a necessidade de acesso.
 
+Na variável `CRON_TIME` você deve definir quando o backup será executado, ela possui seis asteriscos separados por espaço. Cada asterisco significa um tempo, seguindo a ordem temos que:
+
+1. representa os segundos (0-59)
+2. os minutos (0-59)
+3. as horas (0-23)
+4. os dias (1-31)
+5. os meses (0-11) [Janeiro - Dezembro ]
+6. os dias da semana (0-6) [Domingo - Sábado]
+
 ## Utilização
 
 Execute o `index.js`:
@@ -37,6 +46,12 @@ node index.js
 ### Recomendação
 
 Recomendo a execução do `s3-backup` com o `pm2`. Para saber mais sobre ele clique [aqui](http://pm2.keymetrics.io/docs/usage/quick-start/)
+
+Caso use o `pm2`:
+
+```
+pm2 start index.js --name=s3-backup
+```
 
 ## Sobre
 
