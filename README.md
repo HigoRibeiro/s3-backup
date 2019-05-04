@@ -2,6 +2,8 @@
 
 Esse programa tem como objetivo fazer o dump do banco de dados mysql e enviar para o Amazon S3.
 
+OBS: é necessário ter o `mysqldump` instalado na sua máquina.
+
 ## Instalação
 
 Faça o clone desse repositório na sua máquina:
