@@ -9,7 +9,7 @@ module.exports = async (config, file) => new Promise(async (resolve, reject) => 
       crypto.randomBytes(16, (err, hash) => {
         if (err) reject(err)
 
-        const now = moment().format('YYYY-MM-DD-HH:m:s')
+        const now = moment().format('YYYY-MM-DD-HH:m')
         const filename = `${hash.toString("hex")}-${now}.sql`
         file(filename, res.stdout)
         resolve()
