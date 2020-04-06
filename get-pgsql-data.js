@@ -6,7 +6,7 @@ module.exports = async (config, file) => new Promise(async (resolve, reject) => 
   try {
 
     execa('pg_dump', 
-      ['--dbname', `postgresql://${config.username}:${config.password}:${config.port}@${config.server}/${config.database}`]).then(res => {
+      ['--dbname', `postgresql://${config.username}:${config.password}@${config.server}:${config.port}/${config.database}`]).then(res => {
       crypto.randomBytes(16, (err, hash) => {
         if (err) reject(err)
 
