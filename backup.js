@@ -10,7 +10,7 @@ const configSentry = require('./config/sentry')
 const configMysql = require('./config/mysql')
 const configPgsql = require('./config/pgsql')
 
-const database = porcess.env.DATABASE || 'mysql'
+const database = process.env.DATABASE || 'mysql'
 
 Sentry.init(configSentry);
 
