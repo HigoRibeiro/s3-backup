@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@sentry/node": "^5.1.0",
+    "@sentry/node": "^5.15.4",
     "@slynova/flydrive": "^0.3.1",
     "aws-sdk": "^2.448.0",
     "cron": "^1.7.1",
