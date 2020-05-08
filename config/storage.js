@@ -9,7 +9,6 @@
 
 module.exports = {
   default: 's3',
-  fileFolder: process.env.FILE_FOLDER,
   disks: {
     s3: {
       driver: 's3',
