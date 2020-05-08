@@ -9,13 +9,14 @@
 
 module.exports = {
   default: 's3',
+  fileFolder: process.env.FILE_FOLDER,
   disks: {
     s3: {
       driver: 's3',
       key: process.env.AWS_S3_KEY,
       secret: process.env.AWS_S3_SECRET,
       region: process.env.AWS_S3_REGION,
-      bucket: process.env.AWS_S3_BUCKET,
+      bucket: process.env.AWS_S3_BUCKET
     },
   },
 }

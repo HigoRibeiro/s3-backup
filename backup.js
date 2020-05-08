@@ -20,7 +20,7 @@ async function backup() {
     switch (database) {
       case 'mysql':
         await getMySQLData(configMysql, async (filename, stream) => {
-          await storage.put(filename, stream)
+          await storage.put(`${configStorage.fileFolder}/${filename}`, stream)
         })
       break
       case 'pg':
