@@ -19,8 +19,8 @@ async function backup() {
     const storage = new StorageManager(configStorage)
     switch (database) {
       case 'mysql':
-        await getMySQLData(configMysql, async (filename, stream) => {
-          await storage.put(`${configStorage.fileFolder}/${filename}`, stream)
+        await getMySQLData(configMysql, async (filename, filecontent) => {
+          await storage.put(`${configStorage.fileFolder}/${filename}`, filecontent)
         })
       break
       case 'pg':
