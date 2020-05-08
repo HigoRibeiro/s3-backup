@@ -2,22 +2,26 @@ const exec = require('child_process').exec;
 const moment = require('moment')
 const fs = require('fs')
 
-module.exports = async (config, databaseName, file) => new Promise(async (resolve, reject) => {
+module.exports = (config, databaseName) => new Promise( (resolve, reject) => {
   try {
 
     const now = moment().format('YYYY-MM-DD-HH-m')
     const filename = `${databaseName}-${now}.sql`
-    const filepath = `${__dirname}/${filename}`
-
-    exec(`mysqldump -h${config.host} -P${config.port} -u${config.username} -p${config.password} ${databaseName} > ${filepath}`)
-
-    let interval = setInterval(() => {
-      if (fs.existsSync(filepath)) {
-        file(filename, fs.readFileSync(filepath), filepath)
-        resolve()
-        clearInterval(interval)
+    const filepath = `${__dirname}/dumps/${filename}`
+    const cmd = `mysqldump -h${config.host} -P${config.port} -u${config.username} -p${config.password} ${databaseName} > ${filepath}`
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        console.warn(error)
       }
-    }, 2000)
+
+      console.log(`Backup created: ${filename}`)
+      
+      const backupFile = {
+        filename: filename,  
+        filepath: filepath
+      }
+      resolve(backupFile)
+    })
 
   } catch (err) {
     reject(err)
