@@ -14,7 +14,7 @@ module.exports = async (config, file) => new Promise(async (resolve, reject) => 
 
     let interval = setInterval(() => {
       if (fs.existsSync(filepath)) {
-        file(filename, fs.readFileSync(filepath))
+        file(filename, fs.readFileSync(filepath), filepath)
         resolve()
         clearInterval(interval)
       }
