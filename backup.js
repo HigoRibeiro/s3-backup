@@ -2,6 +2,9 @@ const fs = require('fs')
 const StorageManager = require('@slynova/flydrive')
 const Sentry = require('@sentry/node')
 
+const dotenv = require('dotenv')
+dotenv.config()
+
 const getMySQLData = require('./get-mysql-data')
 const getPostgreSQLData = require('./get-pgsql-data')
 
@@ -18,49 +21,30 @@ async function backup() {
   try {
 
     const storage = new StorageManager(configStorage)
-    const databases = configMysql.databases
-    
+  
     switch (database) {
       case 'mysql':
 
-        function makeBackup(databaseName) {
-          return new Promise((resolve, reject) => {
-            getMySQLData(configMysql, databaseName)
-            .then((backupFile) => {
-              console.log(`Starting upload of backup: ${backupFile.filename}`)
-              storage.put(`${databaseName}/${backupFile.filename}`, fs.readFileSync(backupFile.filepath))
-              .then(() => {
-                console.log(`Backup removed from ${backupFile.filepath}`)
-                fs.unlink(backupFile.filepath, function () {})
-                let currentIndex = databases.indexOf(databaseName)
-                if(databases.indexOf(databaseName) < databases.length-1) {
-                  makeBackup(databases[currentIndex+1])
-                } else {
-                  console.log("Finished backups for now")
-                }
-                resolve()
-              })
-              .catch((err) => {
-                console.warn(err)
-              })
-            
-            })
-            .catch((err) => {
-              console.warn(err)
-              reject()
-            })
-          })
+        for(databaseName of configMysql.databases) {
+          if(process.env.DEBUG === 'true') console.log(`******** STARTING BACKUP FOR DB ${databaseName} ************`)
+          const backupFile = await getMySQLData(configMysql, databaseName)
+          if(process.env.DEBUG === 'true') console.log(`Starting upload of backup: ${backupFile.filename}`)
+          await storage.put(`${databaseName}/${backupFile.filename}`, fs.readFileSync(backupFile.filepath))
+          fs.unlink(backupFile.filepath, function () {})
+          if(process.env.DEBUG === 'true') console.log(`Backup removed from ${backupFile.filepath}`)
+          if(process.env.DEBUG === 'true') console.log(`******** FINISHED BACKUP FOR DB ${databaseName} ************`)
         }
 
-        makeBackup(databases[0])
+        Sentry.captureMessage(`Backup successfully databases: ${JSON.stringify(configMysql.databases)}`);
       
       break
       case 'pg':
-        await configMysql.databases.map( async (databaseName) => {
-          await getPostgreSQLData(configPgsql, databaseName, async (filename, stream) => {
-            await storage.put(`${databaseName}/${filename}`, stream)
-          })
+
+      for(databaseName of configPgsql.databases) {
+        await getPostgreSQLData(configPgsql, databaseName, async (filename, stream) => {
+          await storage.put(`${databaseName}/${filename}`, stream)
         })
+      }
       break
     }
   } catch (err) {
