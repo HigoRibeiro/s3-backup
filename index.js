@@ -4,6 +4,10 @@ dotenv.config()
 
 const backup = require('./backup')
 
-new CronJob(process.env.CRON_TIME || '* * * * * *', () => {
-  backup()
-}, null, true, 'America/Sao_Paulo')
+module.exports = ( async () => {
+
+  new CronJob(process.env.CRON_TIME || '* * * * * *', async () => {
+    await backup()
+  }, null, true, process.env.TIMEZONE)
+
+})()

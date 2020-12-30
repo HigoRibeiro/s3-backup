@@ -13,41 +13,43 @@ const configSentry = require('./config/sentry')
 const configMysql = require('./config/mysql')
 const configPgsql = require('./config/pgsql')
 
-const database = process.env.DATABASE || 'mysql'
+const dbEngines = JSON.parse(process.env.DB_ENGINES) || []
 
 Sentry.init(configSentry);
+
+const getDbEngineInfo = (dbEngine) => {
+
+  if(dbEngine == 'mysql') return { getData: getMySQLData, config: configMysql }
+  
+  return { getData: getPostgreSQLData, config: configPgsql }
+
+}
 
 async function backup() {
   try {
 
     const storage = new StorageManager(configStorage)
-  
-    switch (database) {
-      case 'mysql':
+    
+    for(const dbEngine of dbEngines) {
+      if(process.env.DEBUG === 'true') console.log(`******** STARTING BACKUP FOR ENGINE ${dbEngine} ************`)
 
-        for(databaseName of configMysql.databases) {
-          if(process.env.DEBUG === 'true') console.log(`******** STARTING BACKUP FOR DB ${databaseName} ************`)
-          const backupFile = await getMySQLData(configMysql, databaseName)
-          if(process.env.DEBUG === 'true') console.log(`Starting upload of backup: ${backupFile.filename}`)
-          await storage.put(`${databaseName}/${backupFile.filename}`, fs.readFileSync(backupFile.filepath))
-          fs.unlink(backupFile.filepath, function () {})
-          if(process.env.DEBUG === 'true') console.log(`Backup removed from ${backupFile.filepath}`)
-          if(process.env.DEBUG === 'true') console.log(`******** FINISHED BACKUP FOR DB ${databaseName} ************`)
-        }
+      const { getData, config } = getDbEngineInfo(dbEngine)
 
-        Sentry.captureMessage(`Backup successfully databases: ${JSON.stringify(configMysql.databases)}`);
-      
-      break
-      case 'pg':
-
-      for(databaseName of configPgsql.databases) {
-        await getPostgreSQLData(configPgsql, databaseName, async (filename, stream) => {
-          await storage.put(`${databaseName}/${filename}`, stream)
-        })
+      for(const databaseName of config.databases) {
+        if(process.env.DEBUG === 'true') console.log(`******** STARTING BACKUP FOR DB ${databaseName} ************`)
+        const backupFile = await getData(config, databaseName)
+        if(process.env.DEBUG === 'true') console.log(`Starting upload of backup: ${backupFile.filename}`)
+        await storage.put(`${databaseName}/${backupFile.filename}`, fs.readFileSync(backupFile.filepath))
+        fs.unlink(backupFile.filepath, function () {})
+        if(process.env.DEBUG === 'true') console.log(`Backup removed from ${backupFile.filepath}`)
+        if(process.env.DEBUG === 'true') console.log(`******** FINISHED BACKUP FOR DB ${databaseName} ************`)
       }
-      break
+  
+      Sentry.captureMessage(`Backup successfully databases: ${JSON.stringify(config.databases)}`);
     }
+
   } catch (err) {
+    console.log(err)
     Sentry.captureException(err)
   }
 }

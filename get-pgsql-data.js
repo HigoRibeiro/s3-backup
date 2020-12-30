@@ -1,17 +1,23 @@
-const execa = require('execa')
-const moment = require('moment')
+const exec = require('child_process').exec;
+const moment = require('moment');
 
-module.exports = async (config, databaseName, file) => new Promise(async (resolve, reject) => {
+module.exports = (config, databaseName) => new Promise( (resolve, reject) => {
   try {
 
-    execa('pg_dump', 
-      ['--dbname', `postgresql://${config.username}:${config.password}@${config.server}:${config.port}/${databaseName}`])
-      .then(res => {
-        const now = moment().format('YYYY-MM-DD-HH-mm-ss')
-        const filename = `${databaseName}-${now}.postgresql.sql`
-        file(filename, res.stdout)
-        resolve()
-      })
+    const now = moment().format('YYYY-MM-DD-HH-m')
+    const filename = `${databaseName}-${now}.sql`
+    const filepath = `${__dirname}/dumps/${filename}`
+    const cmd = `docker exec ${config.dockerImage} pg_dump -U ${config.username} ${databaseName} > ${filepath}`
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        console.warn(error)
+      }
+
+      if(process.env.DEBUG === 'true') console.log(`Backup created: ${filename}`)
+      
+      resolve({ filename: filename, filepath: filepath })
+    })
+
   } catch (err) {
     reject(err)
   }
