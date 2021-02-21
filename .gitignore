@@ -1,3 +1,4 @@
 node_modules/
 dumps/
 .env
+config.js

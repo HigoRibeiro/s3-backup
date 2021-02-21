@@ -1,19 +1,22 @@
 const exec = require('child_process').exec;
 const moment = require('moment');
+const config = require('../config');
 
-module.exports = (config, databaseName) => new Promise( (resolve, reject) => {
+module.exports = (dbInstance, databaseName) => new Promise( (resolve, reject) => {
   try {
 
     const now = moment().format('YYYY-MM-DD-HH-m')
     const filename = `${databaseName}-${now}.sql`
-    const filepath = `${__dirname}/dumps/${filename}`
-    const cmd = `docker exec ${config.dockerImage} pg_dump -U ${config.username} ${databaseName} > ${filepath}`
+    const filepath = `${process.cwd()}/dumps/${filename}`
+
+    const cmd = `docker exec ${dbInstance.dockerImage} pg_dump -U ${dbInstance.user} ${databaseName} > ${filepath}`
+    
     exec(cmd, (error, stdout, stderr) => {
       if (error) {
         console.warn(error)
       }
 
-      if(process.env.DEBUG === 'true') console.log(`Backup created: ${filename}`)
+      if(config.debug) console.log(`Backup created: ${filename}`)
       
       resolve({ filename: filename, filepath: filepath })
     })
